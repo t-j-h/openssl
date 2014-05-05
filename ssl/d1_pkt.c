@@ -440,7 +440,12 @@ printf("\n");
 		unsigned char *mac = NULL;
 		unsigned char mac_tmp[EVP_MAX_MD_SIZE];
 		mac_size=EVP_MD_CTX_size(s->read_hash);
-		OPENSSL_assert(mac_size <= EVP_MAX_MD_SIZE);
+                if (mac_size > EVP_MAX_MD_SIZE)
+			{
+			al=SSL_AD_INTERNAL_ERROR;
+			SSLerr(SSL_F_DTLS1_PROCESS_RECORD,SSL_R_BAD_MAC_LENGTH);
+                        goto f_err;
+			}
 
 		/* orig_len is the length of the record before any padding was
 		 * removed. This is public information, as is the MAC in use,
